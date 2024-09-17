@@ -87,7 +87,7 @@ class MapScreen extends StatelessWidget {
             options: MapOptions(
               crs: const CrsSimple(),
               initialCenter: const LatLng(-0.606428, 0.474673),
-              initialZoom: 3.0,
+              initialZoom: 1.0,
               minZoom: -2.0,
               maxZoom: 7.0,
               onTap: (tapPosition, point) => print(point),
