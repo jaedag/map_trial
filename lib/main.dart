@@ -49,21 +49,22 @@ class MapScreen extends StatelessWidget {
     List<Marker> markers = sprayCanCoordinates['locations']!.map<Marker>((location) {
       var coords = location['coordinates']!;
 
-      const double xScaling = 0.0001166;
-      const double yScaling = 0.0001361;
-      const double xTranslation = -0.606428;
-      const double yTranslation = 0.474673;
+      const double xScaling = 22800.0; // Scaling factor for x-axis
+      const double yScaling = 22800.0; // Scaling factor for y-axis
 
-      List<double> transformCoordinates(double x, double y) {
-        double transformedX = xScaling * x + xTranslation;
-        double transformedY = yScaling * y + yTranslation;
+      const double xTranslation = 0.60654771755490977103; // Translate to center the map
+      const double yTranslation = 0.47454296228059800189; // Translate to center the map
+
+      List<double> transformToMapCoords(double x, double y) {
+        double transformedX = (x / xScaling) - xTranslation;
+        double transformedY = (y / yScaling) + yTranslation;
         return [transformedX, transformedY];
       }
 
       double x = coords[0];
       double y = coords[1];
 
-      List<double> transformedCoords = transformCoordinates(x, y);
+      List<double> transformedCoords = transformToMapCoords(x, y);
       double xPrime = transformedCoords[0];
       double yPrime = transformedCoords[1];
 
@@ -87,10 +88,13 @@ class MapScreen extends StatelessWidget {
             options: MapOptions(
               crs: const CrsSimple(),
               initialCenter: const LatLng(-0.606428, 0.474673),
-              initialZoom: 1.0,
+              initialZoom: 3.0,
               minZoom: -2.0,
               maxZoom: 7.0,
-              onTap: (tapPosition, point) => print(point),
+              onTap: (tapPosition, point) {
+                print(
+                    'Latitude: ${point.latitude.toStringAsFixed(20)}, Longitude: ${point.longitude.toStringAsFixed(20)}');
+              },
               cameraConstraint: CameraConstraint.contain(
                 bounds: LatLngBounds(
                   const LatLng(0.0, 0.0),
@@ -100,7 +104,7 @@ class MapScreen extends StatelessWidget {
             ),
             children: [
               TileLayer(
-                urlTemplate:
+                urlTemplate: //"images/tiles/{z}-{x}_{y}.png",
                     'https://raw.githubusercontent.com/mchingiz/gta_map_tiles/main/{z}_{x}_{y}.jpg',
                 userAgentPackageName: 'com.example.app',
               ),
